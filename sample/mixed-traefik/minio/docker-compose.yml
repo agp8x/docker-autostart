@@ -1,0 +1,25 @@
+version: '3'
+services:
+ minio:
+  image: minio/minio
+  command: server /data --console-address ":9001"
+  env_file: project.env
+  networks:
+   - frontend
+  volumes:
+   - ./data/:/data
+  labels:
+   - "traefik.enable=true"
+   - "traefik.docker.network=files_frontend"
+   # api
+   - "traefik.http.routers.files.rule=PathPrefix(`/`)"
+   - "traefik.http.routers.minio.service=minio"
+   - "traefik.http.services.minio.loadbalancer.server.port=9000"
+   - "traefik.http.routers.files.entrypoints=websecure"
+   - "de.wie-ei.autostart=true"
+
+
+networks:
+ frontend:
+  external:
+   name: traefik_frontend

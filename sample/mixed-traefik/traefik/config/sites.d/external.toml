@@ -1,0 +1,12 @@
+[http.routers.external]
+	rule = "PathPrefix(`/devops-valley`)"
+	service = "external"
+	entryPoints = ["web-secure"]
+	[http.routers.external.tls]
+		certresolver = "letsencrypt"
+
+[http.services.external.loadBalancer]
+	# github does not know about our proxy. if it needs to know the host the user queried, set to true 
+	passHostHeader = false
+[[http.services.external.loadBalancer.servers]]
+	url = "https://github.com/devops-valley"

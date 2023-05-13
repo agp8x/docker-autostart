@@ -1,0 +1,29 @@
+version: "3"
+services:
+ public:
+  image: traefik:v2.10
+  command:
+#   - "--api.insecure=true"
+#   - "--log.level=DEBUG"
+   - "--providers.docker.exposedbydefault=false"
+   - "--entrypoints.websecure.address=:443"
+   - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+   - "--certificatesresolvers.myresolver.acme.email=acme.server@agp8x.org"
+   - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
+   - "--providers.file.directory=/etc/traefik/sites.d/"
+  ports:
+   - "443:443"
+#   - "8078:8080"
+  volumes:
+   - "./config/sites.d/:/etc/traefik/sites.d/:ro"
+   - "/data/traefik/acme.json:/acme.json"
+   - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  networks:
+   - frontend
+  restart: always
+  labels:
+   - "de.wie-ei.autostart=true"
+   - "de.wie-ei.autostart.priority=100"
+
+networks:
+ frontend:
